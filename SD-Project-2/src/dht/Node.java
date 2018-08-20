@@ -1,4 +1,4 @@
-package DHT;
+package dht;
 
 import java.net.*;
 
