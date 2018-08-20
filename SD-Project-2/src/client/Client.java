@@ -2,6 +2,7 @@ package client;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.IOException;
 import java.net.*;
 
 public class Client {
@@ -10,7 +11,6 @@ public class Client {
 		Scanner sc = new Scanner(System.in);
 		ArrayList<Integer> knownHostList = new ArrayList<Integer>();
 		String userEnter = null;
-		Socket socket;
 		
 		try {
 			System.out.println("Digite o número da porta de um nó conhecido, "
@@ -27,11 +27,22 @@ public class Client {
 			
 		}
 	}
+	
+	
 	public void join(ArrayList<Integer> lista) {
 		
 	}
+	
 	public void openSocket() {
+		try {
+			Socket novaConexao = new Socket("127.0.0.1", 9000);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
-
 }
