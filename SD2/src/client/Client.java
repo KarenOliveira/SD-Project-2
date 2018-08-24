@@ -14,6 +14,18 @@ public class Client implements Runnable{
 	private static Scanner sc = new Scanner(System.in);
 	private ArrayList<Integer> listaPortas = new ArrayList<Integer>();
 	
+	
+	public void init() {
+		Integer porta;
+		do {
+			System.out.println("Digite o número da porta, digite o número 0,"
+					+ "caso já tenha digitado todas as portas: ");
+			porta = (Integer) Integer.parseInt(sc.nextLine());
+			listaPortas.add(porta);
+		}while(porta!=0);
+		join(listaPortas);
+	}
+	
 	@Override
 	public void run() {
 		while(running) {
@@ -28,22 +40,6 @@ public class Client implements Runnable{
 			}
 		}
 	}
-	public void init() {
-		Integer porta;
-		do {
-			System.out.println("Digite o número da porta, digite o número 0,"
-					+ "caso já tenha digitado todas as portas: ");
-			porta = (Integer) Integer.parseInt(sc.nextLine());
-			listaPortas.add(porta);
-		}while(porta!=0);
-		join(listaPortas);
-	}
-	
-	public static void main(String[] args) {
-		Client client = new Client();
-		client.init();	
-	}
-	
 	
 	public void conectarNode(int porta) throws IOException{
 			try {
@@ -65,7 +61,13 @@ public class Client implements Runnable{
 			} catch (IOException e) {
 				System.out.println("Porta " + lista.get(i) + " não responde\n");
 			}
+		}
 	}
+	
+	
+	public static void main(String[] args) {
+		Client client = new Client();
+		client.init();	
 	}
 }
 

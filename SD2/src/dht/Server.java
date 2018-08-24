@@ -6,6 +6,7 @@ import java.net.*;
 public class Server extends Thread {
 	private ServerSocket serverSocket;
 	private Socket socket;
+	private String entrada;
 	private boolean running = true;
 	private boolean conexao = true;
 	
@@ -21,7 +22,14 @@ public class Server extends Thread {
 				//DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
 				DataInputStream streamIn = new DataInputStream(socket.getInputStream());
 				while(conexao) {
-					System.out.println(streamIn.readUTF());
+					entrada = streamIn.readUTF();
+					System.out.println(entrada);
+					if(entrada.equals("sair")) {
+						conexao=false;
+						System.out.println("Conexão fechada");
+						streamIn.close();
+						socket.close();
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

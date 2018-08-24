@@ -17,7 +17,6 @@ public class Node{
 			Server server = new Server(serverSocket);
 			server.run();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
