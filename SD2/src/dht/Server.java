@@ -26,7 +26,7 @@ public class Server extends Thread {
 					System.out.println(entrada);
 					if(entrada.equals("sair")) {
 						conexao=false;
-						closeConection(socket, streamIn, streamOut);
+						closeConection(streamIn, streamOut, socket);
 					}
 				}
 			} catch (IOException e) {
@@ -34,14 +34,10 @@ public class Server extends Thread {
 			}
 		}
 	}
-	public void closeConection(Socket s, DataInputStream sIn, DataOutputStream sOut) {
-		try {
-			System.out.println("Conexão fechada");
-			sOut.close();
-			sIn.close();
-			socket.close();
-		} catch(IOException e) {
-			
-		}
+	public void closeConection(DataInputStream sIn, DataOutputStream sOut, Socket s) throws IOException{
+		System.out.println("Conexão fechada");
+		sIn.close();
+		sOut.close();
+		socket.close();
 	}
 }

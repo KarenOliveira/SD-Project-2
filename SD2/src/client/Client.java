@@ -2,13 +2,10 @@ package client;
 
 import java.net.*;
 import java.util.*;
-
-import dht.Node;
-
 import java.io.*;
 
 
-public class Client extends Thread{
+public class Client implements Runnable{
 	
 	private DataOutputStream streamOut;
 	private DataInputStream streamIn;
@@ -20,14 +17,13 @@ public class Client extends Thread{
 	
 	
 	public void init() {
+		listaPortas.clear();
 		Integer porta;
 		do {
 			System.out.println("Digite o número da porta, digite o número 0,"
 					+ "caso já tenha digitado todas as portas: ");
 			porta = (Integer) Integer.parseInt(sc.nextLine());
-				if(porta!=0) {
-					listaPortas.add(porta);
-				}
+			listaPortas.add(porta);
 		}while(porta!=0);
 		join(listaPortas);
 	}
@@ -35,22 +31,22 @@ public class Client extends Thread{
 	@Override
 	public void run() {
 		while(running) {
-			while(conexao) {
+			do {
 			System.out.println("Digite sua mensagem: ");
 			String mensagem = sc.nextLine();
-				try {
-					streamOut.writeUTF(mensagem);
-					if(mensagem.equals("sair")) {
-						conexao = false;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch(NullPointerException e) {
-					e.printStackTrace();
+			try {
+				streamOut.writeUTF(mensagem);
+				if(mensagem.equals("sair")) {
+					conexao = false;
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch(NullPointerException e) {
+				e.printStackTrace();
 			}
-		closeConection();
-		init();
+		}while(conexao==true);
+			closeConection(streamIn, streamOut, socket);
+			init();
 		}
 	}
 	
@@ -71,34 +67,24 @@ public class Client extends Thread{
 			try {
 				conectarNode(lista.get(i));
 				System.out.println("Conectado na Porta: " + lista.get(i) + "\n");
+				conexao = true;
 				run();
 			} catch (IOException e) {
 				System.out.println("Porta " + lista.get(i) + " não responde\n");
 			}
 		}
-	System.out.println("Nenhum nó encontrado...\nCriando nova DHT\nGerando nó");
-	Node node = new Node(16);
-	System.out.println("Nó gerado");
-	
-		try {
-			System.out.println("Conectando nó");
-			conectarNode(9016);
-			System.out.println("Nó conectado");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	run();
 	}
-	public void closeConection(){
+	
+	public void closeConection(DataInputStream sIn, DataOutputStream sOut, Socket s){
+		System.out.println("Conexão fechada");
 		try {
+			sIn.close();
+			sOut.close();
 			socket.close();
-			streamIn.close();
-			streamOut.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 	
 	
