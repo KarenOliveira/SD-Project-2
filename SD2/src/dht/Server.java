@@ -1,13 +1,10 @@
 package dht;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class Server extends Thread {
-	private static ServerSocket serverSocket;
+	private ServerSocket serverSocket;
 	private Socket socket;
 	private boolean running = true;
 	private boolean conexao = true;
@@ -21,7 +18,7 @@ public class Server extends Thread {
 			try {
 				socket = serverSocket.accept();
 				new Server(serverSocket).start();
-				DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
+				//DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
 				DataInputStream streamIn = new DataInputStream(socket.getInputStream());
 				while(conexao) {
 					System.out.println(streamIn.readUTF());

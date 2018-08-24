@@ -1,9 +1,9 @@
 package client;
 
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
+
 
 public class Client implements Runnable{
 	
@@ -36,16 +36,7 @@ public class Client implements Runnable{
 			porta = (Integer) Integer.parseInt(sc.nextLine());
 			listaPortas.add(porta);
 		}while(porta!=0);
-		
-		for(int i = 0;i<listaPortas.size();i++) {
-				try {
-					conectarNode(listaPortas.get(i));
-					System.out.println("Conectado na Porta: " + listaPortas.get(i) + "\n");
-					run();
-				} catch (IOException e) {
-					System.out.println("Porta " + listaPortas.get(i) + " não responde\n");
-				}
-		}
+		join(listaPortas);
 	}
 	
 	public static void main(String[] args) {
@@ -63,6 +54,18 @@ public class Client implements Runnable{
 			} catch (UnknownHostException e) {
 				System.out.println("Host não encontrado");
 			} 
+	}
+	
+	public void join(ArrayList<Integer> lista) {
+		for(int i = 0;i<lista.size();i++) {
+			try {
+				conectarNode(lista.get(i));
+				System.out.println("Conectado na Porta: " + lista.get(i) + "\n");
+				run();
+			} catch (IOException e) {
+				System.out.println("Porta " + lista.get(i) + " não responde\n");
+			}
+	}
 	}
 }
 

@@ -1,12 +1,10 @@
 package dht;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class Node{
-	private static ServerSocket serverSocket;
-	private Socket socket;
+	private ServerSocket serverSocket;
 	private int id;
 	private final int port = 9000;
 	private int porta;
@@ -15,7 +13,7 @@ public class Node{
 		this.id=i;
 		porta = port+id;
 		try {
-			ServerSocket serverSocket = new ServerSocket(porta);
+			serverSocket = new ServerSocket(porta);
 			Server server = new Server(serverSocket);
 			server.run();
 		} catch (IOException e) {
