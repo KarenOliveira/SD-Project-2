@@ -19,21 +19,29 @@ public class Server extends Thread {
 			try {
 				socket = serverSocket.accept();
 				new Server(serverSocket).start();
-				//DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
+				DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
 				DataInputStream streamIn = new DataInputStream(socket.getInputStream());
 				while(conexao) {
 					entrada = streamIn.readUTF();
 					System.out.println(entrada);
 					if(entrada.equals("sair")) {
 						conexao=false;
-						System.out.println("Conexão fechada");
-						streamIn.close();
-						socket.close();
+						closeConection(socket, streamIn, streamOut);
 					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-	}	
+	}
+	public void closeConection(Socket s, DataInputStream sIn, DataOutputStream sOut) {
+		try {
+			System.out.println("Conexão fechada");
+			sOut.close();
+			sIn.close();
+			socket.close();
+		} catch(IOException e) {
+			
+		}
+	}
 }
