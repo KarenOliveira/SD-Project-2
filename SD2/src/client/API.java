@@ -3,10 +3,14 @@ package client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Set;
 
 import dht.Node;
 import utils.Utils;
@@ -121,12 +125,31 @@ public class API implements Runnable{
 	public void leave() {
 		try {
 			node.sendMessage("LEAVE", node.getPortSuc());
-			for(int i = 0;i<node.getTable().getTabela().size();i++) {
-				node.sendMessage("TRANSFER " + node.getTable(), node.getPortSuc());
-			}
+			
+	        Set<Integer> keys = node.getTable().getTabela().keySet();
+	        for(Integer key: keys){
+	           node.sendMessage("TRANSFER " + key + " " + node.getTable().getTabela().get(key), node.getPortSuc());
+	        }
+	        
+	        int id = node.getPortSuc() - 9000;
+	        node.sendMessage("NODE_GONE " + id + " " + node.getPortSuc(), node.getPortAnt());
+
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void store() {
+		byte[] value;
+		int key;
+		try {
+			value = node.getTable().getValue();
+			key = node.getTable().getKey(value);
+			node.sendMessage("STORE " + Arrays.toString(value) + " " + key, node.getPortSuc());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -85,7 +85,7 @@ public class Node extends Thread {
 					case "STORE":
 						tempKey = Integer.parseInt(comando[1]);
 						if(tempKey > id) sendMessage("STORE " + tempKey + " " + comando[2], portSuc);
-						else table.putFile();
+						else table.getTabela().put(tempKey, comando[2].getBytes());
 						break;
 					case "RETRIEVE":
 						tempKey = Integer.parseInt(comando[1]);
@@ -151,6 +151,10 @@ public class Node extends Thread {
 
 	public Table getTable() {
 		return table;
+	}
+
+	public int getPortAnt() {
+		return portAnt;
 	}
 	
 	

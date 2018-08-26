@@ -11,10 +11,11 @@ import javax.xml.bind.DatatypeConverter;
 
 public class Hash {
 	
-    public String getHash(File file) {
+    public String getHash(byte[] file) {
 
-      	  byte[] bytesArray = new byte[(int) file.length()]; 
-
+    	 /*
+      	  byte[] bytesArray = new byte[(int) file.length()];     	  
+      	  
       	  FileInputStream fis;
    		try {
    			fis = new FileInputStream(file);
@@ -22,12 +23,13 @@ public class Hash {
    			fis.close();
    		}
       	 catch (IOException e) { e.printStackTrace(); }
+    	*/
     	
         String result = null;
         
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(bytesArray);
+            byte[] hash = digest.digest(file);
             return bytesToHex(hash); // make it printable
         }catch(Exception ex) {
             ex.printStackTrace();
