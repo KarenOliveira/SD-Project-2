@@ -52,7 +52,6 @@ public class Node extends Thread {
 		while(running) {
 			try {
 				socket = serverSocket.accept();
-				//new Node(id,portAnt,portSuc).start();
 				streamIn = new DataInputStream(socket.getInputStream());
 				streamOut = new DataOutputStream(socket.getOutputStream());
 				
@@ -145,6 +144,15 @@ public class Node extends Thread {
 	public int getPorta() {
 		return porta;
 	}
+
+	public int getPortSuc() {
+		return portSuc;
+	}
+
+	public Table getTable() {
+		return table;
+	}
+	
 	
 	
 }

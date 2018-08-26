@@ -84,7 +84,10 @@ public class API implements Runnable{
 	public void run() {
 		while(running) {
 			do {
-			System.out.println("Digite sua mensagem: ");
+			System.out.println("Digite o comando desejado:\n"
+					+ "[procurar] Procura arquivo que esteja armazenado.\n"
+					+ "[guardar] Guarda um arquivo.\n"
+					+ "[sair] Desconectar\n");
 			
 			String mensagem = sc.nextLine();
 			try {
@@ -98,7 +101,6 @@ public class API implements Runnable{
 				e.printStackTrace();
 			}
 		} while(conexao==true);
-			System.out.println("eta porra");
 			closeConection(streamIn, streamOut, socket);
 			init();
 		}
@@ -112,6 +114,21 @@ public class API implements Runnable{
 			sOut.close();
 			socket.close();
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void leave() {
+		try {
+			node.sendMessage("LEAVE", node.getPortSuc());
+			for(int i = 0;i<node.getTable().getTabela().size();i++) {
+				node.sendMessage("TRANSFER " + node.getTable(), node.getPortSuc());
+			}
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
