@@ -55,6 +55,8 @@ public class API implements Runnable{
 				System.out.println("Conectado na Porta: " + lista.get(i) + "\n");
 				streamOut.writeUTF("JOIN");
 				
+				System.out.println("JOIN enviado" );
+				
 				entrada = streamIn.readUTF();
 				String[] ok = Utils.cutString(entrada);
 				System.out.println(ok[2]);
@@ -62,6 +64,7 @@ public class API implements Runnable{
 				node = new Node(Integer.parseInt(ok[1]), Integer.parseInt(ok[2]), Integer.parseInt(ok[3]));
 				
 				conexao = true;
+				node.run();
 				run();
 			} catch (IOException e) {
 				System.out.println("Porta " + lista.get(i) + " não responde\n");
@@ -70,6 +73,9 @@ public class API implements Runnable{
 		
 		node = new Node(16,0,0);
 		System.out.println("Nenhum nó encontrado \n Criando nova DHT");
+		
+		node.start();
+		run();
 	}
 	
 	public void conectarNode(int porta) throws IOException{
@@ -87,26 +93,24 @@ public class API implements Runnable{
 	@Override
 	public void run() {
 		while(running) {
-			do {
 			System.out.println("Digite o comando desejado:\n"
 					+ "[procurar] Procura arquivo que esteja armazenado.\n"
 					+ "[guardar] Guarda um arquivo.\n"
 					+ "[sair] Desconectar\n");
 			
 			String mensagem = sc.nextLine();
-			try {
-				node.sendMessage(mensagem, node.getPorta());
-				if(mensagem.equals("sair")) {
-					conexao = false;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch(NullPointerException e) {
-				e.printStackTrace();
+			
+			switch(mensagem) {
+			case "procurar":
+				retrieve();
+				break;
+			case "guardar":
+				store();
+				break;
+			case "sair":
+				leave();
+				break;
 			}
-		} while(conexao==true);
-			closeConection(streamIn, streamOut, socket);
-			init();
 		}
 	}
 	
@@ -133,11 +137,8 @@ public class API implements Runnable{
 	        
 	        int id = node.getPortSuc() - 9000;
 	        node.sendMessage("NODE_GONE " + id + " " + node.getPortSuc(), node.getPortAnt());
-
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+	        running = false;
+		}  catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -146,6 +147,7 @@ public class API implements Runnable{
 	public void store() {
 		byte[] value;
 		int key;
+	
 		try {
 			value = node.getTable().getValue();
 			key = node.getTable().getKey(value);
@@ -154,6 +156,19 @@ public class API implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void retrieve() {
+		
+		try {
+			System.out.println("Insira a chave de busca: ");
+			int key = Integer.parseInt(sc.nextLine());
+			node.sendMessage("RETRIEVE " + node.getTable().getTabela().get(key) + " " + node.getcurrentId(), node.getPortSuc());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public static void main(String[] args) {

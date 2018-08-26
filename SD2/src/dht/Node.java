@@ -4,10 +4,11 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import utils.SingleNodeException;
 import utils.Table;
 import utils.Utils;
 
-public class Node extends Thread {
+public class Node extends Thread{
 	
 	private final static int PORT = 9000;
 	
@@ -42,7 +43,7 @@ public class Node extends Thread {
 		porta = PORT + id;
 		try {
 			serverSocket = new ServerSocket(porta);
-			System.out.println("Oi");
+			System.out.println("Node instanciado na porta " + porta);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -51,6 +52,9 @@ public class Node extends Thread {
 	public void run() {
 		while(running) {
 			try {
+				System.out.println("Run rodando");
+				System.out.println("Esperando mensagem...");
+				
 				socket = serverSocket.accept();
 				streamIn = new DataInputStream(socket.getInputStream());
 				streamOut = new DataOutputStream(socket.getOutputStream());
@@ -66,50 +70,68 @@ public class Node extends Thread {
 					switch(comando[0]) {
 					case "JOIN":
 						idNovo = gerador.nextInt(id)+portAnt-9000;
+					
 						sendMessage("NEW_NODE " + idNovo, portAnt);
-						
 						streamOut.writeUTF("JOIN_OK " + idNovo + " " + portAnt + " " + (9000+id));
 						portAnt = idNovo+9000;
 						break;
+						
 					case "JOIN_OK":
 						break;
+						
 					case "NEW_NODE":
 						portSuc = Integer.parseInt(comando[1]);
 						break;
+						
 					case "LEAVE":
 						portAnt = Integer.parseInt(comando[1]);
 						break;
+						
 					case "NODE_GONE":
 						portSuc = Integer.parseInt(comando[1]);
 						break;
+						
 					case "STORE":
 						tempKey = Integer.parseInt(comando[1]);
-						if(tempKey > id) sendMessage("STORE " + tempKey + " " + comando[2], portSuc);
+						if(tempKey > id)
+						sendMessage("STORE " + tempKey + " " + comando[2], portSuc);
 						else table.getTabela().put(tempKey, comando[2].getBytes());
 						break;
+						
 					case "RETRIEVE":
 						tempKey = Integer.parseInt(comando[1]);
-						if(tempKey > id) sendMessage("RETRIEVE " + tempKey + " " + comando[2], portSuc);
+						if(tempKey > id)
+								sendMessage("RETRIEVE " + tempKey + " " + comando[2], portSuc);
 						else {
-							if(table.getTabela().get(tempKey) == null) sendMessage("NOT_FOUND", Integer.parseInt(comando[2]));
-							else sendMessage("OK " + table.getTabela().get(tempKey), Integer.parseInt(comando[2]));
+							if(table.getTabela().get(tempKey) == null)
+								try {
+									sendMessage("NOT_FOUND", Integer.parseInt(comando[2]));
+								} catch (NumberFormatException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							else
+								try {
+									sendMessage("OK " + table.getTabela().get(tempKey), Integer.parseInt(comando[2]));
+								} catch (NumberFormatException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} 
 						}
 						break;
+						
 					case "OK":
 						System.out.println("Arquivo encontrado \n" + comando[1]);
 						break;
+						
 					case "NOT_FOUND":
 						System.out.println("Arquivo não encontrado");
 						break;
+						
 					case "TRANSFER":
 						//table.getTabela().put(Integer.parseInt(comando[1]), comando[2]);
 						break;
 					}
-					
-					//if(entrada.equals("sair")) {
-						//conexao=false;
-						//closeConection(streamIn, streamOut, socket);
-					//}
 				}
 				
 			} catch (IOException e) {
@@ -118,16 +140,18 @@ public class Node extends Thread {
 		}
 	}
 	
-	public void sendMessage(String mensagem, int portaDestino) throws UnknownHostException, IOException  {
-		
+	public void sendMessage(String mensagem, int portaDestino) throws UnknownHostException, IOException {
+		if (portaDestino==0) {
+			try {
+				throw new SingleNodeException();
+			} catch (SingleNodeException e) {
+				System.out.println("Unico nó");
+			}
+		}
 		socket = new Socket("127.0.0.1", portaDestino);
 		streamOut = new DataOutputStream(socket.getOutputStream());
-		
-		//streamOut.writeUTF("JOIN");
 		closeConection(streamIn, streamOut, socket);
 	}
-	
-	
 	
 	public void closeConection(DataInputStream sIn, DataOutputStream sOut, Socket s) throws IOException{
 		System.out.println("Conexão fechada");
@@ -136,11 +160,8 @@ public class Node extends Thread {
 		socket.close();
 	}
 	
-	public static void main(String[] args) {
-		Node node = new Node(5, 9000, 9033);
-		node.run();
-	}
-
+	//GETTERS
+	
 	public int getPorta() {
 		return porta;
 	}
@@ -156,7 +177,8 @@ public class Node extends Thread {
 	public int getPortAnt() {
 		return portAnt;
 	}
-	
-	
-	
+
+	public int getcurrentId() {
+		return this.id;
+	}
 }

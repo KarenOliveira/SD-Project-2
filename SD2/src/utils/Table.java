@@ -46,12 +46,7 @@ public class Table {
 	    return key.intValue();
 	}
 	
-	
-	
-	
 	public Hashtable<Integer, byte[]> getTabela() {
 		return tabela;
 	}
-	
-	
 }
