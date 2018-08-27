@@ -1,16 +1,8 @@
 package client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.math.BigInteger;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.Set;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 import dht.Node;
 import utils.Utils;
@@ -24,7 +16,6 @@ public class API implements Runnable{
 	private Socket socket;
 	
 	private boolean running = true;
-	private boolean conexao;
 	private static Scanner sc = new Scanner(System.in);
 	
 	private Node node;
@@ -54,24 +45,20 @@ public class API implements Runnable{
 				
 				System.out.println("Conectado na Porta: " + lista.get(i) + "\n");
 				streamOut.writeUTF("JOIN");
-				
-				System.out.println("JOIN enviado" );
+				System.out.println("JOIN enviado");
 				
 				entrada = streamIn.readUTF();
 				String[] ok = Utils.cutString(entrada);
-				System.out.println(ok[2]);
 				
-				node = new Node(Integer.parseInt(ok[1]), Integer.parseInt(ok[2]), Integer.parseInt(ok[3]));
-				
-				conexao = true;
-				node.run();
-				run();
+				node = new Node(Integer.parseInt(ok[1]), Integer.parseInt(ok[2]), Integer.parseInt(ok[3]), Integer.parseInt(ok[4]));
+				node.start();
+				run();				
 			} catch (IOException e) {
 				System.out.println("Porta " + lista.get(i) + " não responde\n");
 			}
 		}
 		
-		node = new Node(16,0,0);
+		node = new Node(8,0,0,0);
 		System.out.println("Nenhum nó encontrado \n Criando nova DHT");
 		
 		node.start();
@@ -139,7 +126,6 @@ public class API implements Runnable{
 	        node.sendMessage("NODE_GONE " + id + " " + node.getPortSuc(), node.getPortAnt());
 	        running = false;
 		}  catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -153,7 +139,6 @@ public class API implements Runnable{
 			key = node.getTable().getKey(value);
 			node.sendMessage("STORE " + Arrays.toString(value) + " " + key, node.getPortSuc());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -165,7 +150,6 @@ public class API implements Runnable{
 			int key = Integer.parseInt(sc.nextLine());
 			node.sendMessage("RETRIEVE " + node.getTable().getTabela().get(key) + " " + node.getcurrentId(), node.getPortSuc());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

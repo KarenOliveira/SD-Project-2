@@ -1,11 +1,8 @@
 package utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Hashtable;
-import java.util.Scanner;
+import java.io.*;
+import java.math.*;
+import java.util.*;
 
 public class Table {
 
@@ -23,6 +20,7 @@ public class Table {
 		System.out.print("Please enter the file's path:");
     	path = sn.nextLine();
     	File file = new File(path);
+    	sn.close();
         
     	byte[] bytesArray = new byte[(int) file.length()];     	  
     	  

@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import utils.SingleNodeException;
 import utils.Table;
 import utils.Utils;
 
@@ -29,11 +28,16 @@ public class Node extends Thread{
 	
 	private Table table;
 	
+	private int minKey;
+	private int maxKey;
 	
 	private Random gerador;
 	
-	public Node(int id, int portaAnt, int portaSuc) {
+	public Node(int id, int portaAnt, int portaSuc, int minKey) {
 		this.id = id;
+		this.minKey = minKey;
+		this.maxKey = id*25;
+		
 		this.portSuc = portaSuc;
 		this.portAnt = portaAnt;
 		gerador = new Random();
@@ -72,7 +76,7 @@ public class Node extends Thread{
 						idNovo = gerador.nextInt(id)+portAnt-9000;
 					
 						sendMessage("NEW_NODE " + idNovo, portAnt);
-						streamOut.writeUTF("JOIN_OK " + idNovo + " " + portAnt + " " + (9000+id));
+						streamOut.writeUTF("JOIN_OK " + idNovo + " " + portAnt + " " + (9000+id) + " " + minKey);
 						portAnt = idNovo+9000;
 						break;
 						
@@ -106,17 +110,11 @@ public class Node extends Thread{
 							if(table.getTabela().get(tempKey) == null)
 								try {
 									sendMessage("NOT_FOUND", Integer.parseInt(comando[2]));
-								} catch (NumberFormatException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
+								} catch (NumberFormatException e1) {}
 							else
 								try {
 									sendMessage("OK " + table.getTabela().get(tempKey), Integer.parseInt(comando[2]));
-								} catch (NumberFormatException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} 
+								} catch (NumberFormatException e) {} 
 						}
 						break;
 						
@@ -142,11 +140,8 @@ public class Node extends Thread{
 	
 	public void sendMessage(String mensagem, int portaDestino) throws UnknownHostException, IOException {
 		if (portaDestino==0) {
-			try {
-				throw new SingleNodeException();
-			} catch (SingleNodeException e) {
-				System.out.println("Unico nó");
-			}
+			System.out.println("Unica Porta");
+			return;
 		}
 		socket = new Socket("127.0.0.1", portaDestino);
 		streamOut = new DataOutputStream(socket.getOutputStream());
